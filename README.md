@@ -15,13 +15,13 @@
 - [ ] [algs.py]() Contains All Algorithms.
 
 ## Experiment Run Files
--  Run *python gen_data.py **gridSize**( in metres [500, 1000])"* to generate the data for the provided *grid_size*. 
+-  Run *python gen_data.py  **gridSize**( in metres [500, 1000])"* to generate the data for the provided *grid_size*. 
 -  Run *bash  run.sh* to run experiments for all algorithms 
--  Run *python main.by **nRegions** **TimeSlotDuration** **algName** **seed** **gridSize**(metres)* to run algorithm experiments individually. 
+-  Run *python main.by **nRegions**  **TimeSlotDuration**  **algName**  **seed**  **gridSize**(metres)* to run algorithm experiments individually. 
 -  algName : {TSMTC :*TSMTC*, REASSIGN :*REASSIGN*, SDPR :*SDPR*, AGD :*AGD*, fuse_test : *for testing FUSE*, fuse_train :*for training FUSE*}.
   
 ## Training FUSE
--  Run *python main.by 4 20 fuse_train 42 1000"* to run experiments for all algorithms   
+-  Run *python main.by  4  20  fuse_train  42  1000"* to run experiments for all algorithms   
 
 
 ## Data Source Files
