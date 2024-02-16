@@ -8,11 +8,11 @@
 - [ ] Please download and store the synthetic states training data file [training_data_combined.h5](https://drive.google.com/file/d/1V8l9otNp77B73klXp82WZc7nMy5SlktO/view?usp=share_link) in the $/data/training$ directory.
 
 ## Code Files
-- [ ] [utils.py]() Contains all the utility functions.
+- [ ] [utils.py](https://github.com/deytonmoy000/FUSE/blob/master/utils.py) Contains all the utility functions.
 
-- [ ] [main.py]() Runs the experiment.
+- [ ] [main.py](https://github.com/deytonmoy000/FUSE/blob/master/main.py) Runs the experiment.
 
-- [ ] [algs.py]() Contains All Algorithms.
+- [ ] [algs.py](https://github.com/deytonmoy000/FUSE/blob/master/algs.py) Contains All Algorithms.
 
 ## Experiment Run Files
 -  Generate the data for the provided *grid_size*:
