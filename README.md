@@ -21,7 +21,7 @@
 -  algName : {TSMTC :*TSMTC*, REASSIGN :*REASSIGN*, SDPR :*SDPR*, AGD :*AGD*, fuse_test : *for testing FUSE*, fuse_train :*for training FUSE*}.
   
 ## Training FUSE
--  Run *python main.by  4  20  fuse_train  42  1000"* to run experiments for all algorithms   
+-  Run *python main.by  4  20  fuse_train  42  1000"* to train *FAD^2^QN* using **(1Km)^2^** Grid Size, Time Slot duration of **20** minutes and with the Study Area divided into **4** Regions.   
 
 
 ## Data Source Files
