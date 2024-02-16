@@ -4,8 +4,8 @@
 
 ## Experiment Data Files
 
-- [ ] Please store the preprocessed GPS readings [data_new.csv](https://drive.google.com/file/d/1-tFdqdS1qdVb6PeduiHRG5lwGGmbQ4Ni/view?usp=share_link) from the source data files (see below) in the $/data$ directory.
-- [ ] Please download and store the synthetic training states data file [training_data_combined.h5](https://drive.google.com/file/d/1V8l9otNp77B73klXp82WZc7nMy5SlktO/view?usp=share_link) in the $/data/training$ directory.
+- [ ] Please download and store the preprocessed GPS readings [data_new.csv](https://drive.google.com/file/d/1-tFdqdS1qdVb6PeduiHRG5lwGGmbQ4Ni/view?usp=share_link) (combined data from the source data files provided below) in the $/data$ directory.
+- [ ] Please download and store the synthetic states training data file [training_data_combined.h5](https://drive.google.com/file/d/1V8l9otNp77B73klXp82WZc7nMy5SlktO/view?usp=share_link) in the $/data/training$ directory.
 
 ## Code Files
 - [ ] [utils.py]() Contains all the utility functions.
