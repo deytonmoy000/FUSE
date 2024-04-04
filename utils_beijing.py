@@ -191,7 +191,7 @@ def csv_to_grid_updated(grid_size=1000):
 #     print(df.head())
     with open(fname_json, "r") as json_file:
         map_data = json.load(json_file)
-    map_image = Image.open("figs/beijing2.png")
+    map_image = Image.open("figs_beijing/beijing2.png")
     x_scale = map_image.width / (cur_max_LONG - cur_min_LONG)
     y_scale = map_image.height / (cur_max_LAT - cur_min_LAT)
     grid_ids = {}
@@ -240,7 +240,7 @@ def csv_to_grid_updated(grid_size=1000):
 
 def grid_to_map_updated(grid_size):
 
-    map_image = Image.open("figs/beijing2.png")
+    map_image = Image.open("figs_beijing/beijing2.png")
     fig, ax = plt.subplots(1, figsize=(16, 16))  # Adjust the figure size for a larger image
     ax.imshow(map_image)
     final_max_LONG, final_max_LAT = 0, 0
@@ -329,7 +329,7 @@ def grid_to_map_updated(grid_size):
     plt.xticks(x_axis, desired_x_axis)
     plt.yticks(y_axis, desired_y_axis)
 
-    image_fname = f"figs_paper/map_with_visited_grid_cells_{str(int(grid_size))}m_beijing.pdf"
+    image_fname = f"figs_paper_beijing/map_with_visited_grid_cells_{str(int(grid_size))}m_beijing.pdf"
 
     plt.savefig(image_fname, dpi=300)  # Adjust the DPI for a higher resolution image
 
@@ -677,7 +677,7 @@ def save_df(df, fname):
 
 def path_grid_map(grid_size, path, alg, alg_name, cov, t, start_locs, nDiv, seed, tf, km_time):
 
-    map_image = Image.open("figs/beijing2.png")
+    map_image = Image.open("figs_beijing/beijing2.png")
 
     n_rows, n_cols, nPosns, n_rows_valid, n_cols_valid, nPosns_valid = gridSize_info_dict[grid_size] 
     fig, ax = plt.subplots(1, figsize=(8, 8))  # Adjust the figure size for a larger image
@@ -803,7 +803,7 @@ def path_grid_map(grid_size, path, alg, alg_name, cov, t, start_locs, nDiv, seed
     desired_y_axis = [str(int(y * conversion_factor[1])) for y in y_axis]
     plt.xticks(x_axis, desired_x_axis)
     plt.yticks(y_axis, desired_y_axis)
-    fname = f"figs_paper/GS_{int(grid_size)}m/TF_"+str(tf)+"/Div_"+str(nDiv)+"/Rep_"+str(seed)+"/"+alg_name+"/path_grid_"+str(tf)+"_"+alg+"_hour"+str(t)+'_'+str(nDiv)+"divs" + '_'+str(seed)+".png"
+    fname = f"figs_paper_beijing/GS_{int(grid_size)}m/TF_"+str(tf)+"/Div_"+str(nDiv)+"/Rep_"+str(seed)+"/"+alg_name+"/path_grid_"+str(tf)+"_"+alg+"_hour"+str(t)+'_'+str(nDiv)+"divs" + '_'+str(seed)+".png"
     plt.savefig(fname, dpi=300)  # Adjust the DPI for a higher resolution image
     plt.close()
     return fname
@@ -1555,7 +1555,7 @@ def gen_fairness_heatMap(grid_size, df, tf, time_intervals, valid_locs):
     print_data_new = pd.concat([print_data, data_avg, data_24h])
     fname = 'result/heatmap_'+str(tf)+'.csv'
     save_df(print_data_new, fname)
-    image = plt.imread('figs/beijing2.png')
+    image = plt.imread('figs_beijing/beijing2.png')
 
     heatmap_ts_24 = fhv_locs_visited_cnt_24h_ts.reshape(n_rows, n_cols)
     heatmap_vehs_24 = fhv_locs_visited_cnt_24h_vehs.reshape(n_rows, n_cols)
@@ -1570,7 +1570,7 @@ def gen_fairness_heatMap(grid_size, df, tf, time_intervals, valid_locs):
     plt.yticks([])
     plt.grid(visible=True, color='black', linestyle='-', linewidth=0.5, which='both')  # Add gridlines
     cbar = plt.colorbar(heatmap, orientation='horizontal', shrink=0.5, ticks=[np.min(masked_heatmap_ts), np.max(masked_heatmap_ts)], location='top')
-    plt.savefig('figs/map/heatmap_ts_'+str(tf)+'.png', transparent=True)
+    plt.savefig('figs_beijing/map/heatmap_ts_'+str(tf)+'.png', transparent=True)
     plt.clf()
     plt.imshow(image, extent=[0, image.shape[1], 0, image.shape[0]])
     heatmap = plt.imshow(masked_heatmap_ts_hourly, cmap='plasma', interpolation='nearest', extent=[0, image.shape[1], 0, image.shape[0]])
@@ -1578,7 +1578,7 @@ def gen_fairness_heatMap(grid_size, df, tf, time_intervals, valid_locs):
     plt.yticks([])
     plt.grid(visible=True, color='black', linestyle='-', linewidth=0.5, which='both')  # Add gridlines
     cbar = plt.colorbar(heatmap, orientation='horizontal', shrink=0.5, ticks=[0, 1, 2, 3], location='top', label='Average Hourly FHV Sensing Frequency')
-    plt.savefig('figs/map/heatmap_ts_hourly_'+str(tf)+'.png', transparent=True)
+    plt.savefig('figs_beijing/map/heatmap_ts_hourly_'+str(tf)+'.png', transparent=True)
 
     plt.clf()
     bins = [0, 1, 2, 3]
@@ -1594,7 +1594,7 @@ def gen_fairness_heatMap(grid_size, df, tf, time_intervals, valid_locs):
     plt.title('Coefficient of Variation ($\\sigma/\\mu$) of FHV Sensing at Each Hour')
     plt.xticks([0, 6, 12, 18, 24])
 
-    plt.savefig('figs/map/cv_ts_'+str(tf)+'.png')
+    plt.savefig('figs_beijing/map/cv_ts_'+str(tf)+'.png')
     print(cv_values)
     print("\nFull Day Heatmap Results Generated (Min:{}  Max:{}) and Saved ({})\n********-----********-----********-----********-----*******\n".format(min(fhv_locs_visited_cnt_24h_ts[fhv_locs_visited_cnt_24h_ts >= 0]), max(fhv_locs_visited_cnt_24h_ts[fhv_locs_visited_cnt_24h_ts >= 0]),fname))
 
