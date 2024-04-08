@@ -24,15 +24,21 @@ dsv_loc_val = -1000 # value to signify current loc of dsv
 invalid_loc_val = -((2**31)-1)
 max_valid_value = 720
 size_dict = {1: [1, 1], 2: [1, 2], 4:[2, 2], 8: [2, 4], 16: [4, 4], 32:[4, 8]}
-gridSize_info_dict = {1000:(91, 127, 11340, 91, 127, 11557), 500:(182, 252, 45864, 182, 252, 45864)}
+# gridSize_info_dict = {1000:(91, 126, 11466, 91, 126, 11466), 500:(182, 251, 45682, 182, 251, 45682)}
+gridSize_info_dict = {1000:(54, 94, 5076, 54, 94, 5076), 500:(109, 188, 20492, 109, 188, 20492)}
 ALPHA = 0.2
 BETA = 2
 GAMMA = 1
 
-cur_min_LONG = 115.7959
-cur_max_LONG = 117.0566
-cur_min_LAT = 39.4680
-cur_max_LAT = 40.3779
+# cur_min_LONG = 115.7959
+# cur_max_LONG = 117.0566
+# cur_min_LAT = 39.4680
+# cur_max_LAT = 40.3779
+
+cur_min_LONG = 116.0156
+cur_max_LONG = 116.9577
+cur_min_LAT = 39.6226
+cur_max_LAT = 40.1715
 
 
 def gen_granular_data(grid_size):
@@ -506,10 +512,10 @@ def raw_data_preprocessing():
 
     print("LOADED ALL VEHICLES DATA")
 
-    EVdata.columns = ['VID', 'Latitude', 'Longitude', 'Time', 'Speed']
-    TaxiData.columns = ['VID', 'Time', 'Longitude', 'Latitude', 'OccupancyStatus', 'Speed']
-    BusData.columns = ['VID', 'Time', 'PlateID', 'Longitude', 'Latitude', 'Speed']
-    TruckData.columns = ['VID', 'Time', 'Longitude', 'Latitude', 'Speed']
+    EVdata.columns = ['VID', 'Latitude', 'Longitude', 'TimeStamp', 'Speed']
+    TaxiData.columns = ['VID', 'TimeStamp', 'Longitude', 'Latitude', 'OccupancyStatus', 'Speed']
+    BusData.columns = ['VID', 'TimeStamp', 'PlateID', 'Longitude', 'Latitude', 'Speed']
+    TruckData.columns = ['VID', 'TimeStamp', 'Longitude', 'Latitude', 'Speed']
     TaxiData = TaxiData.drop_duplicates()
     BusData = BusData.drop_duplicates()
     EVdata = EVdata.drop_duplicates()
@@ -517,7 +523,7 @@ def raw_data_preprocessing():
     BusData['PlateID'] = BusData['PlateID'].str[2:]
     BusData = BusData.drop(columns=['PlateID'])
     TaxiData = TaxiData.drop(columns=['OccupancyStatus'])
-    desired_order = ['VID', 'Time', 'Longitude', 'Latitude', 'Speed']
+    desired_order = ['VID', 'TimeStamp', 'Longitude', 'Latitude', 'Speed']
     EVdata = EVdata[desired_order]
 
     EVdata['Type'] = 'E'
@@ -529,16 +535,16 @@ def raw_data_preprocessing():
 
     for i in range(len(frames)):
         if i < len(frames)-1:
-            frames[i]['Time'] = pd.to_datetime(frames[i]['Time'])
-            frames[i]['Timestamp'] = pd.to_datetime(frames[i]['Time'].dt.strftime('%Y-%m-%d %H:%M'))
+            frames[i]['TimeStamp'] = pd.to_datetime(frames[i]['TimeStamp'])
+            frames[i]['Timestamp'] = pd.to_datetime(frames[i]['TimeStamp'].dt.strftime('%Y-%m-%d %H:%M'))
             frames[i] = frames[i].sort_values(by=['Timestamp', 'VID'])
-            frames[i]['Date'] = frames[i].groupby(['VID', frames[i]['Timestamp']])['Time'].transform(lambda x: pd.date_range('2023-01-15', periods=len(x), freq='D'))
+            frames[i]['Date'] = frames[i].groupby(['VID', frames[i]['Timestamp']])['TimeStamp'].transform(lambda x: pd.date_range('2023-01-15', periods=len(x), freq='D'))
             frames[i]['Time_New'] = frames[i]['Date'].dt.strftime('%Y-%m-%d') + ' ' + frames[i]['Timestamp'].dt.strftime('%H:%M')
             frames[i]['Time_New'] = pd.to_datetime(frames[i]['Time_New'], format='%Y-%m-%d %H:%M')
 
         else:
-            frames[i]['Time'] = pd.to_datetime(frames[i]['Time'].str.replace(r'^\*\*\*\*\-\*\*', '2023-01', regex=True), format='%Y-%m-%d %H:%M:%S')
-            frames[i]['Timestamp'] = pd.to_datetime(frames[i]['Time'].dt.strftime('%Y-%m-%d %H:%M'), format='%Y-%m-%d %H:%M')
+            frames[i]['TimeStamp'] = pd.to_datetime(frames[i]['TimeStamp'].str.replace(r'^\*\*\*\*\-\*\*', '2023-01', regex=True), format='%Y-%m-%d %H:%M:%S')
+            frames[i]['Timestamp'] = pd.to_datetime(frames[i]['TimeStamp'].dt.strftime('%Y-%m-%d %H:%M'), format='%Y-%m-%d %H:%M')
             frames[i]['Date'] = pd.to_datetime(frames[i]['Timestamp'].dt.strftime('%Y-%m-%d'))
             frames[i]['Time_New'] = frames[i]['Timestamp']
             frames[i] = frames[i].drop_duplicates(subset=['Time_New', 'VID'], keep='last')
@@ -546,7 +552,7 @@ def raw_data_preprocessing():
         frames[i] = frames[i][(frames[i]['Time_New'] < "2023-01-22")]
         print(i, frames[i].groupby(['Date']).size().reset_index(name='Number_of_Rows'))
         frames[i].drop(columns=['Timestamp', 'Date'])
-        desired_order = ['VID', 'Type', 'Time', 'Time_New', 'Longitude', 'Latitude', 'Speed']
+        desired_order = ['VID', 'Type', 'TimeStamp', 'Time_New', 'Longitude', 'Latitude', 'Speed']
         frames[i] = frames[i][desired_order]
 
     print("DATA FORMATTED")
@@ -570,9 +576,9 @@ def raw_data_preprocessing():
     df['VID'] = df['VID'].astype(int)
     df['ID'] = df['ID'].astype(int)
     print("DATA CLEANED PART I")
-    desired_order = ['ID','VID', 'Type', 'Time', 'Time_New', 'Speed', 'Longitude', 'Latitude', 'Long_id', 'Lat_id', 'Position']
+    desired_order = ['ID','VID', 'Type', 'TimeStamp', 'Time_New', 'Speed', 'Longitude', 'Latitude', 'Long_id', 'Lat_id', 'Position']
     df = df[desired_order]
-    df.columns = ['ID','VID', 'Type', 'Time','Time_New', 'Speed', 'Longitude', 'Latitude', 'Long_id', 'Lat_id', 'Position']
+    df.columns = ['ID','VID', 'Type', 'TimeStamp','Time_New', 'Speed', 'Longitude', 'Latitude', 'Long_id', 'Lat_id', 'Position']
 
     df = df[~((df['Long_id'] < 9) & (df['Lat_id'] > 25))]
     df = df[~(((df['Long_id'] < 11) & (df['Lat_id'] > 27)) | ((df['Long_id'] > 21) & (df['Lat_id'] >= 38)))]
@@ -599,10 +605,10 @@ def raw_data_preprocessing_old():
 
     print("LOADED ALL VEHICLES DATA")
 
-    EVdata.columns = ['VID', 'Latitude', 'Longitude', 'Time', 'Speed']
-    TaxiData.columns = ['VID', 'Time', 'Longitude', 'Latitude', 'OccupancyStatus', 'Speed']
-    BusData.columns = ['VID', 'Time', 'PlateID', 'Longitude', 'Latitude', 'Speed']
-    TruckData.columns = ['VID', 'Time', 'Longitude', 'Latitude', 'Speed']
+    EVdata.columns = ['VID', 'Latitude', 'Longitude', 'TimeStamp', 'Speed']
+    TaxiData.columns = ['VID', 'TimeStamp', 'Longitude', 'Latitude', 'OccupancyStatus', 'Speed']
+    BusData.columns = ['VID', 'TimeStamp', 'PlateID', 'Longitude', 'Latitude', 'Speed']
+    TruckData.columns = ['VID', 'TimeStamp', 'Longitude', 'Latitude', 'Speed']
 
     TaxiData = TaxiData.drop_duplicates()
     BusData = BusData.drop_duplicates()
@@ -611,7 +617,7 @@ def raw_data_preprocessing_old():
     BusData['PlateID'] = BusData['PlateID'].str[2:]
     BusData = BusData.drop(columns=['PlateID'])
     TaxiData = TaxiData.drop(columns=['OccupancyStatus'])
-    desired_order = ['VID', 'Time', 'Longitude', 'Latitude', 'Speed']
+    desired_order = ['VID', 'TimeStamp', 'Longitude', 'Latitude', 'Speed']
     EVdata = EVdata[desired_order]
 
     EVdata['Type'] = 'E'
@@ -635,10 +641,10 @@ def raw_data_preprocessing_old():
         if match:
             return match.group()
         return None
-    df['Time'] = df['Time'].apply(extract_time)
+    df['TimeStamp'] = df['TimeStamp'].apply(extract_time)
 
-    df['Time'] = pd.to_datetime(df['Time'], format='%H:%M:%S')
-    df['rounded_Time'] = df['Time'].dt.strftime('%H:%M')
+    df['TimeStamp'] = pd.to_datetime(df['TimeStamp'], format='%H:%M:%S')
+    df['rounded_Time'] = df['TimeStamp'].dt.strftime('%H:%M')
     df['ID'] = df['VID'].rank(method='dense').astype(int) - 1
     df['Long_id'] = ((df['Longitude'] - cur_min_LONG) / 0.01).astype(int)
     df['Lat_id'] = ((cur_max_LAT - df['Latitude']) / 0.01).astype(int)
@@ -646,17 +652,17 @@ def raw_data_preprocessing_old():
 
     df['VID'] = df['VID'].astype(int)
     df['ID'] = df['ID'].astype(int)
-    df['Time'] = pd.to_datetime('2023-01-01 ' + df['rounded_Time'])
+    df['TimeStamp'] = pd.to_datetime('2023-01-01 ' + df['rounded_Time'])
 
     print("DATA CLEANED PART I")
 
-    df = df.drop_duplicates(subset=['Time', 'VID'], keep='last')
+    df = df.drop_duplicates(subset=['TimeStamp', 'VID'], keep='last')
     print(df.head(10))
     print(df.describe())
     df.drop(columns=['Speed', 'rounded_Time'])
-    desired_order = ['ID','VID', 'Type', 'Time','Longitude', 'Latitude', 'Long_id', 'Lat_id', 'Position']
+    desired_order = ['ID','VID', 'Type', 'TimeStamp','Longitude', 'Latitude', 'Long_id', 'Lat_id', 'Position']
     df = df[desired_order]
-    df.columns = ['ID','VID', 'Type', 'Time','Longitude', 'Latitude', 'Long_id', 'Lat_id', 'Position']
+    df.columns = ['ID','VID', 'Type', 'TimeStamp','Longitude', 'Latitude', 'Long_id', 'Lat_id', 'Position']
 
     df = df[~((df['Long_id'] < 9) & (df['Lat_id'] > 25))]
     df = df[~(((df['Long_id'] < 11) & (df['Lat_id'] > 27)) | ((df['Long_id'] > 21) & (df['Lat_id'] >= 38)))]
@@ -687,7 +693,7 @@ def path_grid_map(grid_size, path, alg, alg_name, cov, t, start_locs, nDiv, seed
     final_max_LONG_coord, final_max_LAT_coord = cur_min_LONG, cur_min_LAT
 
     grid_ids = {}
-    fnamex = f'data/map/grids_new_{str(int(grid_size))}m.txt'
+    fnamex = f'data/map/grids_new_{str(int(grid_size))}m_beijing.txt'
     with open(fnamex, "r") as file:
         for line in file:
             lon_id, lat_id, min_LONG_coord, max_LONG_coord, min_LAT_coord, max_LAT_coord, min_LONG, max_LONG, min_LAT, max_LAT  = line.split(',')
@@ -811,8 +817,8 @@ def path_grid_map(grid_size, path, alg, alg_name, cov, t, start_locs, nDiv, seed
 def read_data(fname, start_date, end_date):
 
     df = pd.read_csv(fname)
-    df['Time'] = pd.to_datetime(df['Time'])
-    df = df[((df['Time'] >= start_date) & (df['Time'] <= end_date))]
+    df['TimeStamp'] = pd.to_datetime(df['TimeStamp'])
+    df = df[((df['TimeStamp'] >= start_date) & (df['TimeStamp'] <= end_date))]
 
     print("Data Loaded from {};  Number of Rows: {}".format(fname, len(df)))
     return df
@@ -832,21 +838,21 @@ def combine_results(seed=-1):
     for seed in seeds:
         for alg in algs:
             for nDiv in nDivs:
-                fname = 'result/metrics_'+str(alg)+'_'+str(nDiv)+'divs' + '_'+str(seed)+'.csv'
+                fname = 'results_paper_Beijing/metrics_'+str(alg)+'_'+str(nDiv)+'divs' + '_'+str(seed)+'.csv'
                 print(fname, os.path.isfile(fname))
                 if os.path.isfile(fname):
                     data = pd.read_csv(fname)
                     data['seed'] = seed
                     data['nDiv'] = nDiv
                     df_seed = pd.concat([df_seed, data]) #, ignore_index=True)
-        comb_fname = 'result/combined_metrics_'+str(seed)+'.csv'
+        comb_fname = 'results_paper_Beijing/combined_metrics_'+str(seed)+'.csv'
         save_df(df_seed, comb_fname)
         print("\nRandom (seed=", seed,") results data saved to ", comb_fname )
 
         df_all = pd.concat([df_all, df_seed]) #, ignore_index=True)
         df_seed = pd.DataFrame()
 
-    all_fname = 'result/all_result_metrics.csv'
+    all_fname = 'results_paper_Beijing/all_result_metrics.csv'
     save_df(df_all, all_fname)
     print("\nAll results data saved to ", all_fname )
 
@@ -923,6 +929,7 @@ def generate_neighbors_list_wBorders(n, grid_size, df, alg, tf, km_time):
     valid_div_pos = []
     pos_to_div = {}
 
+    # print(f'mat.shape: {len(mat)}')
     print("\nDivisions:")
     for i in range(area_nrows):
         for j in range(area_ncols):
@@ -949,6 +956,8 @@ def generate_neighbors_list_wBorders(n, grid_size, df, alg, tf, km_time):
                             mat[lat, lon] = 1
                         else:
                             pos_to_div[pos] = div_id
+                            # if pos >= len(mat):
+                            #     print(pos, len(mat))
                             mat[pos] = 1
                         div_pos.add(pos)
                         if pos not in neighbors:
@@ -971,20 +980,19 @@ def generate_neighbors_list_wBorders(n, grid_size, df, alg, tf, km_time):
             file.write(line)
     file.close()
 
-    fname2 = f'data/map/valid_grids_{str(int(grid_size))}m_beijing.txt'
+    # fname2 = f'data/map/valid_grids_{str(int(grid_size))}m_beijing.txt'
     
-    with open(fname2, 'w') as file:
-        for key, val in sorted_neighbors.items():
-            lat, lon = key//n_cols, key%n_cols
-            line = str(lon)+ ',' +str(lat) +'\n'
-            file.write(line)
-    file.close()
+    # with open(fname2, 'w') as file:
+    #     for key, val in sorted_neighbors.items():
+    #         lat, lon = key//n_cols, key%n_cols
+    #         line = str(lon)+ ',' +str(lat) +'\n'
+    #         file.write(line)
+    # file.close()
 
     if alg[:4]=="fuse" or alg[-1]=="F" or alg=="AGD-C":
         return sorted_neighbors, np.array(mat), valid_div_pos, pos_to_div, valid_cells, div_coords
 
     return sorted_neighbors, np.array(mat), valid_div_pos, pos_to_div, valid_locs, div_coords
-
 
 def get_default_mat2D_DQN(grid_size, df, tf, km_time):
 
@@ -997,16 +1005,21 @@ def get_default_mat2D_DQN(grid_size, df, tf, km_time):
         curTime = time_intervals[t][0]
         nextTime = time_intervals[t][1]
         time_t = curTime + interval
+
         data_interval = fetch_rows(df, curTime, time_t)
         cov_cells = get_FHV_cov_coord(grid_size, data_interval, valid_coords)
 
         coord_arr = np.array(list(cov_cells))
 
         fhv_locs_visited_cnt_24h_ts[coord_arr[:, 0], coord_arr[:, 1]] += 1
-    coord_valid = np.array(list(valid_coords))
-    fhv_locs_visited_cnt_24h_ts[coord_valid[:, 0], coord_valid[:, 1]] = (((72-fhv_locs_visited_cnt_24h_ts[coord_valid[:, 0], coord_valid[:, 1]])//18)*(72-fhv_locs_visited_cnt_24h_ts[coord_valid[:, 0], coord_valid[:, 1]]))
-    return fhv_locs_visited_cnt_24h_ts
+        # print(np.count_nonzero(fhv_locs_visited_cnt_24h_ts > 0))
 
+    coord_valid = np.array(list(valid_coords))
+    # tmp = fhv_locs_visited_cnt_24h_ts.copy()
+
+    fhv_locs_visited_cnt_24h_ts[coord_valid[:, 0], coord_valid[:, 1]] = (((72-fhv_locs_visited_cnt_24h_ts[coord_valid[:, 0], coord_valid[:, 1]])//18)*(72-fhv_locs_visited_cnt_24h_ts[coord_valid[:, 0], coord_valid[:, 1]]))
+    
+    return fhv_locs_visited_cnt_24h_ts #, tmp 
 
 def get_default_mat2D_no_padding(grid_size, df,ts=10):
     valid_cells = set()
@@ -1225,11 +1238,11 @@ def load_time_intervals(tf):
     return list_intervals
 
 def fetch_rows(df, start, end):
-    rows_fhv = df[((df['Time'] >= start) & (df['Time'] <= end))]
+    rows_fhv = df[((df['TimeStamp'] >= start) & (df['TimeStamp'] <= end))]
     return rows_fhv #, rows_dsv
 
 def fetch_rows_at(df, cur_time):
-    rows_fhv = df[((df['Time'] == cur_time))]
+    rows_fhv = df[((df['TimeStamp'] == cur_time))]
     return rows_fhv #, rows_dsv
 
 def path_calculator(start, end):
@@ -1289,7 +1302,7 @@ def generate_path_dict(validLoc):
 
         print("Completed Location: {} ".format(i))
 
-    with open('data/path_dict.txt', 'w') as file:
+    with open('data/path_dict_beijing.txt', 'w') as file:
         for key, val in pathDict.items():
             x, y = key
             line = str(x) + ',' + str(y) + '|' + ','.join(map(str, val)) + '\n'
@@ -1372,7 +1385,7 @@ def parallel_generate_path_dict_timeframe_thread(N, validLoc, timeframe, nthread
         path_dict.update(dict)
 
     print("Generated Path Dict for TimeFrame: ", timeframe)
-    fname = 'data/path_dict_' +str(timeframe)+ '.txt'
+    fname = 'data/path_dict_' +str(timeframe)+ '_beijing.txt'
     with open(fname, 'w') as file:
         for key, all_paths in path_dict.items():
             x= key
@@ -1394,7 +1407,7 @@ def generate_path_dict_forTimeFrames(validLoc):
 def load_path_dict():
 
     paths = collections.defaultdict(list)
-    with open('data/path_dict.txt', "r") as file:
+    with open('data/path_dict_beijing.txt', "r") as file:
         for line in file:
             pos, nei = line.split('|')
             x, y = map(int, pos.split(','))
@@ -1509,7 +1522,7 @@ def gen_fairness_heatMap(grid_size, df, tf, time_intervals, valid_locs):
                     }
                 )
 
-            fname = 'result/heatmap_'+str(tf)+'.csv'
+            fname = 'results_paper_Beijing/heatmap_'+str(tf)+'.csv'
             save_df(print_data, fname)
 
             print("\n{} Hourly Heat Map Results (Min:{}  Max:{}) ({}) Generated and Saved\n********-----********-----********-----********-----*******\n".format(curTime, min(fhv_locs_visited_cnt_ts[fhv_locs_visited_cnt_ts >= 0]), max(fhv_locs_visited_cnt_ts[fhv_locs_visited_cnt_ts >= 0]), fname))
@@ -1553,7 +1566,7 @@ def gen_fairness_heatMap(grid_size, df, tf, time_intervals, valid_locs):
                 )
 
     print_data_new = pd.concat([print_data, data_avg, data_24h])
-    fname = 'result/heatmap_'+str(tf)+'.csv'
+    fname = 'results_paper_Beijing/heatmap_'+str(tf)+'.csv'
     save_df(print_data_new, fname)
     image = plt.imread('figs_beijing/beijing2.png')
 
@@ -1837,7 +1850,7 @@ def update_tfm_sfm_tEnd(mat, valid_coords, tf, testing=False):
     tfm = mat.copy()
 
     coordinates_array = np.array(list(valid_coords))
-
+    
     tfm[coordinates_array[:, 0]+tf, coordinates_array[:, 1]+tf] += 1
 
     return tfm

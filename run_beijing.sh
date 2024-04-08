@@ -3,11 +3,11 @@ nThreads=$3
 pyfile=$1
 
 # alg=$1
-declare -a algs=("TSMTC" "REASSIGN" "SDPR" "AGD" "fuse_test") # ("fuse_test_wo12" "fuse_test_wo34" "fuse_test_wo5") # 
-declare -a tfs=("15" "30" "60") # ("20" "40" "60")
-declare -a grids=("1000" "500")
+declare -a algs=("TSMTC" "REASSIGN" "SDPR" "AGD" "fuse_test") # "TSMTC" "REASSIGN" "SDPR" "AGD" "fuse_test") # ("fuse_test_wo12" "fuse_test_wo34" "fuse_test_wo5") # 
+declare -a tfs=("15" "30" "60") # "15" "30" "60") # ("20" "40" "60")
+declare -a grids=("500") # "1000" "500")
 declare -a seeds=("42") # "14" "25" "8" "35") # Please use any seed value as you prefer
-declare -a nDivs=("8" "4" "2" "1")
+declare -a nDivs=("8" "4" "2" "1") # "8" "4" "2" "1")
 
 
 
@@ -32,7 +32,7 @@ do
 					alg=${algs[$a]}
 					tf=${tfs[$k]}
 
-					cmd0="mkdir -p result_paper_beijing/GS_${gs}m/TF_${tf}/Div_${nDiv}/Rep_${seed}"
+					cmd0="mkdir -p results_paper_Beijing/GS_${gs}m/TF_${tf}/Div_${nDiv}/Rep_${seed}"
 					echo $cmd0
 					$cmd0
 

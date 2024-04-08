@@ -22,7 +22,7 @@ import sys
 os.environ["MKL_NUM_THREADS"] = "1" 
 os.environ["NUMEXPR_NUM_THREADS"] = "1"
 from queue import PriorityQueue
-from utils_beijing import create_grid_json_updated, csv_to_grid_updated, grid_to_map_updated, gen_granular_data, update_grids_info, raw_data_preprocessing, raw_data_preprocessing_old, gen_fairness_heatMap, gen_train_data, load_and_preprocess_training_data, read_training_data
+from utils_beijing import pos_to_coord, create_grid_json_updated, csv_to_grid_updated, grid_to_map_updated, gen_granular_data, update_grids_info, raw_data_preprocessing, raw_data_preprocessing_old, gen_fairness_heatMap, gen_train_data, load_and_preprocess_training_data, read_training_data
 from utils_beijing import generate_neighbors_list, generate_time_intervals, generate_path_dict, generate_neighbors_list_wBorders, get_default_cnt_mat, save_df, path_grid_map
 from utils_beijing import read_data, load_neighbors_list, generate_path_dict_forTimeFrames, load_time_intervals, load_path_dict, initialize_STF_weights, get_initial_loc_DSVs, fetch_rows, generate_path_dict_timeframe
 from utils_beijing import get_FHV_cov, update_TSFMetrics, update_TSFMetrics_tEnd
@@ -206,6 +206,7 @@ if __name__ == "__main__":
 
         data_interval = fetch_rows(df, curTime, time_t)
         locs_interval = get_FHV_cov(data_interval, model.pos_neis)
+        # print(sorted([pos_to_coord(grid_size, x) for x in locs_interval]))
         cov_h.extend(locs_interval)
         locs_visited_cnt[locs_interval] += 1
         locs_visited_cnt_24h[locs_interval] += 1
@@ -284,7 +285,7 @@ if __name__ == "__main__":
                         'Mean_Runtime': mean_runtime_vec
                     }
                 )
-            fname = f'result_paper/GS_{grid_size_fname}m/TF_'+str(tf)+'/Div_'+str(nDiv)+'/Rep_'+str(seed)+'/metrics_'+str(model.name)+'_'+str(tf)+'_'+str(nDiv)+'divs' + '_'+str(seed)+'.csv'
+            fname = f'results_paper_Beijing/GS_{grid_size_fname}m/TF_'+str(tf)+'/Div_'+str(nDiv)+'/Rep_'+str(seed)+'/metrics_'+str(model.name)+'_'+str(tf)+'_'+str(nDiv)+'divs' + '_'+str(seed)+'.csv'
             save_df(print_data, fname)
 
             print("\n{} {} Hourly Path Map ({}) and Results ({}) Generated and Saved\n********-----********-----********-----********-----*******\n".format(nextTime, model.name, path_image_fname, fname))
@@ -371,7 +372,7 @@ if __name__ == "__main__":
                 )
 
     print_data = pd.concat([print_data, data_avg, data_24h])
-    fname = f'result_paper/GS_{grid_size_fname}m/TF_'+str(tf)+'/Div_'+str(nDiv)+'/Rep_'+str(seed)+'/metrics_'+str(model.name)+'_'+str(tf)+'_'+str(nDiv)+'divs' + '_'+str(seed)+'.csv'
+    fname = f'results_paper_Beijing/GS_{grid_size_fname}m/TF_'+str(tf)+'/Div_'+str(nDiv)+'/Rep_'+str(seed)+'/metrics_'+str(model.name)+'_'+str(tf)+'_'+str(nDiv)+'divs' + '_'+str(seed)+'.csv'
     save_df(print_data, fname)
     print("\n{} Full Day Results Generated and Saved ({})\n********-----********-----********-----********-----*******\n".format(model.name, fname))
     print("\nRouting Complete\n********-----********-----********-----********-----*******\n")
