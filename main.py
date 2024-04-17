@@ -197,8 +197,8 @@ if __name__ == "__main__":
     cov_h = []
     runtimes = []
     full_start_time = time.time()
-    for t in range(24*int(60//tf)): # len(time_intervals)):
-
+    #for t in range(24*int(60//tf)): # len(time_intervals)):
+    for t in range(9):
         interval = timedelta(minutes=tf-1)
         curTime = time_intervals[t][0]
         nextTime = time_intervals[t][1]

@@ -84,7 +84,8 @@ class TSMTC:
         self.map_area = np.array([[0 for i in range(n_cols_valid)] for j in range(n_rows_valid)])
         self.area_nrows, self.area_ncols = size_dict[self.n]
         self.pos_neis, self.mat, self.valid_div_pos, self.pos_to_div, self.valid_locs, self.div_coords = generate_neighbors_list_wBorders(self.n, grid_size, self.df, self.name, self.timeframe, self.km_time)
-
+        # print(self.pos_neis)
+        # exit()
         self.dsvL = [random.sample(list(self.valid_div_pos[i]), 1)[0] for i in range(n)]
         self.dsv_paths = {i:deque([self.dsvL[i]]) for i in range(self.n)}
 
